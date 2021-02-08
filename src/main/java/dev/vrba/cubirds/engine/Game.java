@@ -3,9 +3,7 @@ package dev.vrba.cubirds.engine;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 public class Game {
@@ -13,6 +11,8 @@ public class Game {
     private final UUID id;
 
     private boolean started = false;
+
+    private GameState state;
 
     private final Map<UUID, Player> players = new HashMap<>();
 
@@ -57,6 +57,31 @@ public class Game {
             throw new IllegalStateException("There needs to be at least 2 players in the game");
         }
 
+        this.state = this.createInitialState();
+
         return this;
+    }
+
+    private @NotNull GameState createInitialState() {
+        List<Bird> drawingDeck = createDrawingDeck();
+
+        return new GameState(
+                null,
+                players.values().iterator().next(),
+                drawingDeck,
+                new ArrayList<>()
+        );
+    }
+
+    private @NotNull List<Bird> createDrawingDeck() {
+        List<Bird> deck = new ArrayList<>();
+
+        for (Bird bird : Bird.values()) {
+            deck.addAll(Collections.nCopies(bird.count, bird));
+        }
+
+        Collections.shuffle(deck);
+
+        return deck;
     }
 }
