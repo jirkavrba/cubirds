@@ -63,25 +63,38 @@ public class Game {
     }
 
     private @NotNull GameState createInitialState() {
-        List<Bird> drawingDeck = createDrawingDeck();
+        CardsDecks decks = CardsDecks.createDefault();
+
+        Player firstPlayer = players.values().iterator().next();
+
+        List<Bird>[] columns = drawColumns(decks);
 
         return new GameState(
                 null,
-                players.values().iterator().next(),
-                drawingDeck,
-                new ArrayList<>()
+                firstPlayer,
+                columns,
+                decks
         );
     }
 
-    private @NotNull List<Bird> createDrawingDeck() {
-        List<Bird> deck = new ArrayList<>();
+    private @NotNull List<Bird>[] drawColumns(@NotNull CardsDecks decks) {
+       @SuppressWarnings("unchecked")
+       final List<Bird>[] columns = (List<Bird>[]) new List[4];
 
-        for (Bird bird : Bird.values()) {
-            deck.addAll(Collections.nCopies(bird.count, bird));
-        }
+       for (List<Bird> column : columns) {
+           while (column.size() < 3) {
+               // There needs to be 3 unique bird types in each column
+               Bird next = decks.drawCard();
 
-        Collections.shuffle(deck);
+               if (column.contains(next)) {
+                   decks.discardCard(next);
+                   continue;
+               }
 
-        return deck;
+               column.add(next);
+           }
+       }
+
+       return columns;
     }
 }

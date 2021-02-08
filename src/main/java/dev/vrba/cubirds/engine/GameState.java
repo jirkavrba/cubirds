@@ -10,6 +10,8 @@ import java.util.List;
 public class GameState {
     private Player winner;
     private Player currentPlayer;
-    private List<Bird> drawingDeck;
-    private List<Bird> discardDeck;
+
+    private List<Bird>[] columns;
+
+    private CardsDecks cardsDecks;
 }
